@@ -9,5 +9,5 @@
     - "./roles/instances/vars/dev.yml"
 
   roles:
-    - { role: facts, tags: [ 'query', 'build' ] }
+    - {role: facts, tags: ['query', 'build']}
     - instances

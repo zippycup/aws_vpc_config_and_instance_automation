@@ -28,12 +28,11 @@
 
 - name: include_tasks igw-route-tables.yml
   include_tasks: igw-route-tables.yml
-  tags: [vpc,  igw-route-tables]
+  tags: [vpc, igw-route-tables]
 
 - name: include_tasks nat-route-tables.yml
   include_tasks: nat-route-tables.yml
-  tags: [vpc,  nat-route-tables]
+  tags: [vpc, nat-route-tables]
   with_items: "{{ aws_vpc_nat_route_tables }}"
   loop_control:
     loop_var: outer_nat_route
-

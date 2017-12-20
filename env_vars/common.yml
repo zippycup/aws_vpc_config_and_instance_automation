@@ -106,7 +106,7 @@ aws_vpc_subnets:
     cidr_block: "{{ dev_db_a_cidr_block }}"
     tags:
       Name: "{{ aws_vpc_name }}-dev-db-a"
-      
+
   dev-db-c:
     availability_zone: "{{aws_continent}}-{{aws_subnet_region}}-1c"
     cidr_block: "{{ dev_db_c_cidr_block }}"
@@ -286,7 +286,7 @@ aws_ec2_groups:
       - proto: icmp
         from_port: 0
         to_port: -1
-        cidr_ip:     
+        cidr_ip:
           - "{{ aws_external_ip1 }}"
           - "{{ aws_external_ip2 }}"
           - "{{aws_internal_ip1}}"
@@ -405,7 +405,7 @@ aws_ec2_groups:
         cidr_ip:
           - "{{dmz_a_cidr_block}}"
           - "{{dmz_c_cidr_block}}"
- 
+
       - proto: tcp
         from_port: 80
         to_port: 80
@@ -561,11 +561,11 @@ aws_vpc_igw_route_tables:
 
   - vpc_id: "{{ aws_vpc_id }}"
     region: "{{ aws_vpc_region }}"
-    propagating_vgw_ids:  ["{{ aws_vpngateway_id }}"]
+    propagating_vgw_ids: ["{{ aws_vpngateway_id }}"]
     tags:
       Name: "{{ aws_vpc_name }}-route-dmz"
     subnets:
-      - "{{ aws_vpc_name }}-dmz-a" 
+      - "{{ aws_vpc_name }}-dmz-a"
       - "{{ aws_vpc_name }}-dmz-c"
     routes:
       - dest: 0.0.0.0/0
@@ -577,7 +577,7 @@ aws_vpc_nat_route_tables:
 
   - vpc_id: "{{ aws_vpc_id }}"
     region: "{{ aws_vpc_region }}"
-    propagating_vgw_ids:  ["{{ aws_vpngateway_id }}"]
+    propagating_vgw_ids: ["{{ aws_vpngateway_id }}"]
     tags:
       Name: "{{ aws_vpc_name }}-route-a"
     subnets:
@@ -590,10 +590,10 @@ aws_vpc_nat_route_tables:
     routes:
       - dest: "{{ aws_vpngateway_cidr }}"
         gateway_id: "{{ aws_vpngateway_id }}"
-        
+
   - vpc_id: "{{ aws_vpc_id }}"
     region: "{{ aws_vpc_region }}"
-    propagating_vgw_ids:  ["{{ aws_vpngateway_id }}"]
+    propagating_vgw_ids: ["{{ aws_vpngateway_id }}"]
     tags:
       Name: "{{ aws_vpc_name }}-route-c"
     subnets:

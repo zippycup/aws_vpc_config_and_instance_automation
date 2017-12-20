@@ -46,7 +46,7 @@ pip install -r requirements.txt
 # Configure environment
 
 You need to configure the environment to point to the correct aws account
-Contact sysops to get the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
+Contact your system administrator to get the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
  
 
 ```sh
@@ -69,6 +69,7 @@ export AWS_PROFILE=prod
 # Assumptions
 
 You already created vpc with tag {{aws_environment}} e.g useast1
+
 10.8.0.0/16 tag useast1
 
 Already configured VPN Connection note the vpngateway_id 
@@ -76,8 +77,13 @@ Already configured VPN Connection note the vpngateway_id
 # Configure vpc
 
 edit group_vars/all
-edit env_vars/useast1.yml
 
+- external_ip is access the instances in the vpc via the nat instance, your ip is what you google 'what's my ip' on your computer.
+- internal_ip is traffic to aws vpn gateway.
+
+edit env_vars/common.yml
+
+edit env_vars/useast1.yml
 
 This script creates the entire VPC along with subnets, nat instances, routing and security groups.
 ```sh
@@ -149,4 +155,3 @@ Either remove the block of code, or make the 'instances: 0'
         volume_type: gp2
         volume_size: 40
 ```
-

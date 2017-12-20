@@ -5,4 +5,3 @@
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
   with_items: "{{ aws_facts }}"
-

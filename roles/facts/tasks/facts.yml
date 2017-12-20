@@ -51,4 +51,3 @@
     filters:
       vpc-id: "{{ aws_vpc_id }}"
   register: route_table_facts
-

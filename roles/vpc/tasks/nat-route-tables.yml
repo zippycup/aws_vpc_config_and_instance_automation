@@ -31,7 +31,7 @@
 
 - name: set_fact default route
   set_fact:
-    route: [{'dest': '0.0.0.0/0', 'instance_id': "{{ vpc_nat_id }}" }]
+    route: [{'dest': '0.0.0.0/0', 'instance_id': "{{vpc_nat_id }}"}]
 
 - name: merge routes
   set_fact:
