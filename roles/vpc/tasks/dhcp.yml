@@ -1,0 +1,11 @@
+---
+
+- name: Create VPC DHCP Options
+  ec2_vpc_dhcp_options:
+    delete_old: False
+    domain_name: "{{ item.domain_name }}"
+    inherit_existing: False
+    region: "{{ aws_vpc_region }}"
+    tags: "{{ item.tags }}"
+    vpc_id: "{{ aws_vpc_id }}"
+  with_items: "{{ aws_vpc_dhcp_opts }}"

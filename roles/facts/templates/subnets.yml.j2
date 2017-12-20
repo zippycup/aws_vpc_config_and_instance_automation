@@ -1,0 +1,7 @@
+# subnets: {{ aws_environment }}
+#
+{% if 'subnets' in subnet_facts %}
+{% for subnet in subnet_facts['subnets'] %}
+{{ subnet | to_nice_yaml }}
+{% endfor %}
+{% endif %}

@@ -1,0 +1,46 @@
+---
+
+- name: Debug aws_vpc_nat_route_tables
+  debug:
+    msg: "{{item}}"
+  with_items: "{{aws_vpc_nat_route_tables}}"
+  when: debug_play
+
+- name: Debug outer_nat_route
+  debug:
+    msg: "{{outer_nat_route}}"
+  when: debug_play
+
+- name: Gather EC2 instance facts
+#  ec2_instance_facts:
+  ec2_remote_facts:
+    region: "{{ aws_vpc_region }}"
+    filters:
+      vpc-id: "{{ aws_vpc_id }}"
+  register: vpc_instance_facts
+
+- name: set_fact nat tag
+  set_fact:
+    nat_tag: "{{ aws_vpc_name }}-nat-{{outer_nat_route.tags.Name[-1]}}"
+
+- name: set_fact nat instance_id
+  set_fact:
+    vpc_nat_id: "{{item.id}}"
+  with_items: "{{vpc_instance_facts['instances']}}"
+  when: item.tags.Name == nat_tag
+
+- name: set_fact default route
+  set_fact:
+    route: [{'dest': '0.0.0.0/0', 'instance_id': "{{ vpc_nat_id }}" }]
+
+- name: merge routes
+  set_fact:
+    merge_routes: "{{ route }} + {{ outer_nat_route.routes }}"
+
+- name: Setup nat route tables
+  ec2_vpc_route_table:
+    vpc_id: "{{ outer_nat_route.vpc_id }}"
+    region: "{{ outer_nat_route.region }}"
+    tags: "{{ outer_nat_route.tags }}"
+    subnets: "{{ outer_nat_route.subnets }}"
+    routes: "{{ merge_routes }}"

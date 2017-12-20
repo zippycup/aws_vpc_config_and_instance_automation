@@ -1,0 +1,13 @@
+---
+
+- name: Create VPC
+  ec2_vpc_net:
+    state: present
+    cidr_block: "{{ item.cidr_block }}"
+    internet_gateway: "{{ item.internet_gateway | default(False) }}"
+    region: "{{ item.region }}"
+    resource_tags: "{{ item.tags }}"
+    wait: yes
+  with_items: "{{ aws_vpc_root }}"
+  register: vpc_facts
+  when: aws_vpc_id is undefined

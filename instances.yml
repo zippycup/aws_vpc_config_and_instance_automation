@@ -1,0 +1,13 @@
+---
+
+- hosts: localhost
+  connection: local
+  vars_files:
+    - "./env_vars/{{ aws_environment }}.yml"
+    - "./env_vars/common.yml"
+    - "./roles/instances/vars/prod.yml"
+    - "./roles/instances/vars/dev.yml"
+
+  roles:
+    - { role: facts, tags: [ 'query', 'build' ] }
+    - instances

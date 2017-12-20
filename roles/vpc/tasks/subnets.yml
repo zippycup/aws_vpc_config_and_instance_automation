@@ -1,0 +1,29 @@
+---
+
+- name: create subnet_tagname_list
+  set_fact:
+    subnet_tagname_list: "{{subnet_tagname_list}} + ['{{item.tags.Name}}']"
+  with_items: "{{ subnet_facts['subnets'] }}"
+
+- name: debug subnet_tagname_list
+  debug:
+    msg: "{{ item }}"
+  with_items: "{{ subnet_tagname_list }}"
+  when: debug_play
+
+- name: debug aws_vpc_subnets
+  debug:
+    msg: "{{ item }}"
+  with_dict: "{{ aws_vpc_subnets }}"
+  when: debug_play
+
+- name: Create VPC subnets
+  ec2_vpc_subnet:
+    state: present
+    az: "{{ item.value.availability_zone }}"
+    cidr: "{{ item.value.cidr_block }}"
+    region: "{{ aws_vpc_region }}"
+    resource_tags: "{{ item.value.tags }}"
+    vpc_id: "{{ aws_vpc_id }}"
+  with_dict: "{{ aws_vpc_subnets }}"
+  when: item.value.tags.Name not in subnet_tagname_list

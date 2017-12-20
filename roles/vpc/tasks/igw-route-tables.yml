@@ -1,0 +1,20 @@
+---
+
+- name: Debug aws_vpc_igw_route_tables
+  debug:
+    msg: "{{aws_vpc_igw_route_tables}}"
+  when: debug_play
+
+- name: Debug igw_facts
+  debug:
+    msg: "{{igw_facts}}"
+  when: debug_play
+
+- name: Set up internet gateway route tables
+  ec2_vpc_route_table:
+    vpc_id: "{{ item.vpc_id }}"
+    region: "{{ item.region }}"
+    tags: "{{ item.tags }}"
+    subnets: "{{ item.subnets }}"
+    routes: "{{ item.routes }}"
+  with_items: "{{ aws_vpc_igw_route_tables }}"

@@ -1,0 +1,5 @@
+# vpc: {{ aws_environment }}
+#
+{% for vpc in vpc_facts['vpcs'] %}
+{{ vpc | to_nice_yaml }}
+{% endfor %}

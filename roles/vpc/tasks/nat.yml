@@ -1,0 +1,40 @@
+---
+
+- name: Gather VPC subnet facts
+  ec2_vpc_subnet_facts:
+    region: "{{ aws_vpc_region }}"
+    filters:
+      vpc-id: "{{ aws_vpc_id }}"
+  register: subnet_facts
+
+- name: Gather subnet_id
+  set_fact:
+    vpc_subnet_id: "{{item.id}}"
+  with_items: "{{subnet_facts['subnets']}}"
+  when: item.tags.Name == outer_item.value.subnet
+
+- name: debug vpc_subnet
+  debug:
+    msg: "{{vpc_subnet_id}}"
+  when: debug_play
+
+- name: debug outer_item
+  debug:
+    msg: "{{outer_item}}"
+  when: debug_play
+
+- name: Create VPC NAT instances
+  ec2:
+    assign_public_ip: yes
+    group: "{{ outer_item.value.group }}"
+    instance_tags: "{{ outer_item.value.tags }}"
+    instance_type: "{{ outer_item.value.instance_type }}"
+    image: "{{ outer_item.value.image_id }}"
+    key_name: "{{ outer_item.value.key_name }}"
+    monitoring: yes
+    region: "{{ outer_item.value.region }}"
+    source_dest_check: no
+    user_data: "{{ lookup('template', 'user_data.j2') }}"
+    vpc_subnet_id: "{{ vpc_subnet_id }}"
+    wait: yes
+  when: outer_item.value.tags.Name not in vpc_instances

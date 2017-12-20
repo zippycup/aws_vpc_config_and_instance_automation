@@ -1,0 +1,9 @@
+#cloud-config
+hostname: {{ outer_item.value.tags.Name }}
+fqdn: {{ outer_item.value.tags.Name }}.{{ aws_vpc_domain }}
+manage_etc_hosts: true
+package_update: false
+power_state:
+ mode: reboot
+ message: cloud-init complete
+ timeout: 15

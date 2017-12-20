@@ -1,0 +1,608 @@
+#
+# Common AWS Configuration
+#
+
+aws_vpc_id: "{{ dynamic_vpc_id | default(None) }}"
+aws_vpc_igw_id: "{{ dynamic_aws_vpc_igw_id | default(None) }}"
+aws_vpc_subnet_maps: "{{ dynamic_vpc_subnet_maps | default(None) }}"
+aws_vpc_cidr_block: "{{ aws_vpc_cidr }}.0.0/16"
+aws_nat_instance_type: "t2.small"
+
+# Subnet cidr maps
+
+dmz_a_cidr_block: "{{ aws_vpc_cidr }}.64.0/24"
+dmz_b_cidr_block: "{{ aws_vpc_cidr }}.65.0/24"
+dmz_c_cidr_block: "{{ aws_vpc_cidr }}.66.0/24"
+dmz_d_cidr_block: "{{ aws_vpc_cidr }}.67.0/24"
+
+mgmt_a_cidr_block: "{{ aws_vpc_cidr }}.68.0/24"
+mgmt_b_cidr_block: "{{ aws_vpc_cidr }}.69.0/24"
+mgmt_c_cidr_block: "{{ aws_vpc_cidr }}.70.0/24"
+
+prod_app_a_cidr_block: "{{ aws_vpc_cidr }}.71.0/24"
+prod_app_b_cidr_block: "{{ aws_vpc_cidr }}.72.0/24"
+prod_app_c_cidr_block: "{{ aws_vpc_cidr }}.73.0/24"
+prod_app_d_cidr_block: "{{ aws_vpc_cidr }}.74.0/24"
+
+prod_db_a_cidr_block: "{{ aws_vpc_cidr }}.75.0/24"
+prod_db_b_cidr_block: "{{ aws_vpc_cidr }}.76.0/24"
+prod_db_c_cidr_block: "{{ aws_vpc_cidr }}.77.0/24"
+prod_db_d_cidr_block: "{{ aws_vpc_cidr }}.78.0/24"
+
+dev_app_a_cidr_block: "{{ aws_vpc_cidr }}.192.0/24"
+dev_app_b_cidr_block: "{{ aws_vpc_cidr }}.193.0/24"
+dev_app_c_cidr_block: "{{ aws_vpc_cidr }}.194.0/24"
+dev_app_d_cidr_block: "{{ aws_vpc_cidr }}.195.0/24"
+
+dev_db_a_cidr_block: "{{ aws_vpc_cidr }}.196.0/24"
+dev_db_b_cidr_block: "{{ aws_vpc_cidr }}.197.0/24"
+dev_db_c_cidr_block: "{{ aws_vpc_cidr }}.198.0/24"
+dev_db_d_cidr_block: "{{ aws_vpc_cidr }}.199.0/24"
+
+aws_vpc_subnets:
+
+  dmz_a:
+    availability_zone: "{{aws_continent}}-{{aws_subnet_region}}-1a"
+    cidr_block: "{{ dmz_a_cidr_block }}"
+    tags:
+      Name: "{{ aws_vpc_name }}-dmz-a"
+
+  dmz-c:
+    availability_zone: "{{aws_continent}}-{{aws_subnet_region}}-1c"
+    cidr_block: "{{ dmz_c_cidr_block }}"
+    tags:
+      Name: "{{ aws_vpc_name }}-dmz-c"
+
+  mgmt_a:
+    availability_zone: "{{aws_continent}}-{{aws_subnet_region}}-1a"
+    cidr_block: "{{ mgmt_a_cidr_block }}"
+    tags:
+      Name: "{{ aws_vpc_name }}-mgmt-a"
+
+  mgmt_c:
+    availability_zone: "{{aws_continent}}-{{aws_subnet_region}}-1c"
+    cidr_block: "{{ mgmt_c_cidr_block }}"
+    tags:
+      Name: "{{ aws_vpc_name }}-mgmt-c"
+
+  prod_app_a:
+    availability_zone: "{{aws_continent}}-{{aws_subnet_region}}-1a"
+    cidr_block: "{{ prod_app_a_cidr_block }}"
+    tags:
+      Name: "{{ aws_vpc_name }}-prod-app-a"
+
+  prod_app_c:
+    availability_zone: "{{aws_continent}}-{{aws_subnet_region}}-1c"
+    cidr_block: "{{ prod_app_c_cidr_block }}"
+    tags:
+      Name: "{{ aws_vpc_name }}-prod-app-c"
+
+  prod_db_a:
+    availability_zone: "{{aws_continent}}-{{aws_subnet_region}}-1a"
+    cidr_block: "{{ prod_db_a_cidr_block }}"
+    tags:
+      Name: "{{ aws_vpc_name }}-prod-db-a"
+
+  prod_db_c:
+    availability_zone: "{{aws_continent}}-{{aws_subnet_region}}-1c"
+    cidr_block: "{{ prod_db_c_cidr_block }}"
+    tags:
+      Name: "{{ aws_vpc_name }}-prod-db-c"
+
+  dev_app_a:
+    availability_zone: "{{aws_continent}}-{{aws_subnet_region}}-1a"
+    cidr_block: "{{ dev_app_a_cidr_block }}"
+    tags:
+      Name: "{{ aws_vpc_name }}-dev-app-a"
+
+  dev_app_c:
+    availability_zone: "{{aws_continent}}-{{aws_subnet_region}}-1c"
+    cidr_block: "{{ dev_app_c_cidr_block }}"
+    tags:
+      Name: "{{ aws_vpc_name }}-dev-app-c"
+
+  dev_db_a:
+    availability_zone: "{{aws_continent}}-{{aws_subnet_region}}-1a"
+    cidr_block: "{{ dev_db_a_cidr_block }}"
+    tags:
+      Name: "{{ aws_vpc_name }}-dev-db-a"
+      
+  dev-db-c:
+    availability_zone: "{{aws_continent}}-{{aws_subnet_region}}-1c"
+    cidr_block: "{{ dev_db_c_cidr_block }}"
+    tags:
+      Name: "{{ aws_vpc_name }}-dev-db-c"
+
+# VPC configuration
+#
+aws_vpc_root:
+  - cidr_block: "{{aws_vpc_cidr_block}}"
+    internet_gateway: True
+    region: "{{ aws_vpc_region }}"
+    tags:
+      Name: "{{ aws_vpc_name }}"
+
+aws_vpc_dhcp_opts:
+  - dns_servers: "{{ aws_vpc_dns_servers }}"
+    domain_name: "{{ aws_vpc_domain }}"
+    tags:
+      Name: "{{ aws_vpc_name }}-dhcp"
+
+# VPC Security Groups
+#
+# Assign network groups to security groups
+
+aws_ec2_groups:
+
+  - name: "{{ aws_vpc_name }}-mgmt-sg"
+    vpc_id: "{{ aws_vpc_id }}"
+    region: "{{ aws_vpc_region }}"
+    rules:
+      - proto: all
+        group_name: "{{ aws_vpc_name }}-mgmt-sg"
+      - proto: all
+        cidr_ip:
+          - "{{ aws_external_ip1 }}"
+          - "{{ aws_external_ip2 }}"
+          - "{{aws_internal_ip1}}"
+          - "{{aws_internal_ip2}}"
+          - "{{aws_internal_ip3}}"
+          - "{{aws_internal_ip4}}"
+          - "{{aws_internal_ip5}}"
+          - "{{aws_internal_ip6}}"
+          - "{{aws_internal_ip7}}"
+          - "{{aws_internal_ip8}}"
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip:
+          - "{{dmz_a_cidr_block}}"
+          - "{{dmz_c_cidr_block}}"
+      - proto: tcp
+        from_port: 8140
+        to_port: 8140
+        cidr_ip: "{{aws_vpc_cidr_block}}"
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: "{{aws_vpc_cidr_block}}"
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: "{{aws_vpc_cidr_block}}"
+      - proto: tcp
+        from_port: 8080
+        to_port: 8080
+        cidr_ip: "{{aws_vpc_cidr_block}}"
+      - proto: udp
+        from_port: 6
+        to_port: 65535
+        cidr_ip: "{{aws_vpc_cidr_block}}"
+      - proto: icmp
+        from_port: 8
+        to_port: -1
+        cidr_ip: "0.0.0.0/0"
+
+  - name: "{{ aws_vpc_name }}-dmz-sg"
+    vpc_id: "{{ aws_vpc_id }}"
+    region: "{{ aws_vpc_region }}"
+    rules:
+      - proto: all
+        group_name: "{{ aws_vpc_name }}-dmz-sg"
+      - proto: all
+        cidr_ip:
+          - "{{mgmt_a_cidr_block}}"
+          - "{{mgmt_c_cidr_block}}"
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip:
+          - "{{ aws_external_ip1 }}"
+          - "{{ aws_external_ip2 }}"
+          - "{{aws_internal_ip1}}"
+          - "{{aws_internal_ip2}}"
+          - "{{aws_internal_ip3}}"
+          - "{{aws_internal_ip4}}"
+          - "{{aws_internal_ip5}}"
+          - "{{aws_internal_ip6}}"
+          - "{{aws_internal_ip7}}"
+          - "{{aws_internal_ip8}}"
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip:
+          - "{{dmz_a_cidr_block}}"
+          - "{{dmz_c_cidr_block}}"
+      - proto: tcp
+        from_port: 3128
+        to_port: 3128
+        cidr_ip:
+          - "{{ aws_external_ip1 }}"
+          - "{{ aws_external_ip2 }}"
+          - "{{aws_internal_ip1}}"
+          - "{{aws_internal_ip2}}"
+          - "{{aws_internal_ip3}}"
+          - "{{aws_internal_ip4}}"
+          - "{{aws_internal_ip5}}"
+          - "{{aws_internal_ip6}}"
+          - "{{aws_internal_ip7}}"
+          - "{{aws_internal_ip8}}"
+      - proto: icmp
+        from_port: 0
+        to_port: -1
+        cidr_ip:
+          - "{{ aws_external_ip1 }}"
+          - "{{ aws_external_ip2 }}"
+          - "{{aws_internal_ip1}}"
+          - "{{aws_internal_ip2}}"
+          - "{{aws_internal_ip3}}"
+          - "{{aws_internal_ip4}}"
+          - "{{aws_internal_ip5}}"
+          - "{{aws_internal_ip6}}"
+          - "{{aws_internal_ip7}}"
+          - "{{aws_internal_ip8}}"
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: "{{aws_vpc_cidr_block}}"
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: "{{aws_vpc_cidr_block}}"
+      - proto: udp
+        from_port: 6
+        to_port: 65535
+        cidr_ip: "{{aws_vpc_cidr_block}}"
+      - proto: icmp
+        from_port: 8
+        to_port: -1
+        cidr_ip: "{{aws_vpc_cidr_block}}"
+
+
+  - name: "{{ aws_vpc_name }}-nat-sg"
+    vpc_id: "{{ aws_vpc_id }}"
+    region: "{{ aws_vpc_region }}"
+    rules:
+      - proto: all
+        group_name: "{{ aws_vpc_name }}-nat-sg"
+      - proto: all
+        cidr_ip:
+          - "{{mgmt_a_cidr_block}}"
+          - "{{mgmt_c_cidr_block}}"
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip:
+          - "{{ aws_external_ip1 }}"
+          - "{{ aws_external_ip2 }}"
+          - "{{aws_internal_ip1}}"
+          - "{{aws_internal_ip2}}"
+          - "{{aws_internal_ip3}}"
+          - "{{aws_internal_ip4}}"
+          - "{{aws_internal_ip5}}"
+          - "{{aws_internal_ip6}}"
+          - "{{aws_internal_ip7}}"
+          - "{{aws_internal_ip8}}"
+      - proto: icmp
+        from_port: 0
+        to_port: -1
+        cidr_ip:     
+          - "{{ aws_external_ip1 }}"
+          - "{{ aws_external_ip2 }}"
+          - "{{aws_internal_ip1}}"
+          - "{{aws_internal_ip2}}"
+          - "{{aws_internal_ip3}}"
+          - "{{aws_internal_ip4}}"
+          - "{{aws_internal_ip5}}"
+          - "{{aws_internal_ip6}}"
+          - "{{aws_internal_ip7}}"
+          - "{{aws_internal_ip8}}"
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: "{{aws_vpc_cidr_block}}"
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: "{{aws_vpc_cidr_block}}"
+      - proto: udp
+        from_port: 6
+        to_port: 65535
+        cidr_ip: "{{aws_vpc_cidr_block}}"
+      - proto: icmp
+        from_port: 8
+        to_port: -1
+        cidr_ip: "{{aws_vpc_cidr_block}}"
+
+  - name: "{{ aws_vpc_name }}-prod-db-sg"
+    vpc_id: "{{ aws_vpc_id }}"
+    region: "{{ aws_vpc_region }}"
+    rules:
+      - proto: all
+        group_name: "{{ aws_vpc_name }}-prod-db-sg"
+      - proto: all
+        cidr_ip:
+          - "{{ aws_external_ip1 }}"
+          - "{{ aws_external_ip2 }}"
+          - "{{aws_internal_ip1}}"
+          - "{{aws_internal_ip2}}"
+          - "{{aws_internal_ip3}}"
+          - "{{aws_internal_ip4}}"
+          - "{{aws_internal_ip5}}"
+          - "{{aws_internal_ip6}}"
+          - "{{aws_internal_ip7}}"
+          - "{{aws_internal_ip8}}"
+      - proto: all
+        cidr_ip:
+          - "{{mgmt_a_cidr_block}}"
+          - "{{mgmt_c_cidr_block}}"
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip:
+          - "{{dmz_a_cidr_block}}"
+          - "{{dmz_c_cidr_block}}"
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip:
+          - "{{prod_app_a_cidr_block}}"
+          - "{{prod_app_c_cidr_block}}"
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip:
+          - "{{prod_app_a_cidr_block}}"
+          - "{{prod_app_c_cidr_block}}"
+      - proto: tcp
+        from_port: 3306
+        to_port: 3306
+        cidr_ip:
+          - "{{prod_app_a_cidr_block}}"
+          - "{{prod_app_c_cidr_block}}"
+      - proto: tcp
+        from_port: 5432
+        to_port: 5432
+        cidr_ip:
+          - "{{prod_app_a_cidr_block}}"
+          - "{{prod_app_c_cidr_block}}"
+      - proto: tcp
+        from_port: 7000
+        to_port: 9999
+        cidr_ip:
+          - "{{prod_app_a_cidr_block}}"
+          - "{{prod_app_c_cidr_block}}"
+      - proto: icmp
+        from_port: 8
+        to_port: -1
+        cidr_ip: "0.0.0.0/0"
+
+  - name: "{{ aws_vpc_name }}-prod-app-sg"
+    vpc_id: "{{ aws_vpc_id }}"
+    region: "{{ aws_vpc_region }}"
+    rules:
+      - proto: all
+        group_name: "{{ aws_vpc_name }}-prod-app-sg"
+      - proto: all
+        cidr_ip:
+          - "{{ aws_external_ip1 }}"
+          - "{{ aws_external_ip2 }}"
+          - "{{aws_internal_ip1}}"
+          - "{{aws_internal_ip2}}"
+          - "{{aws_internal_ip3}}"
+          - "{{aws_internal_ip4}}"
+          - "{{aws_internal_ip5}}"
+          - "{{aws_internal_ip6}}"
+          - "{{aws_internal_ip7}}"
+          - "{{aws_internal_ip8}}"
+      - proto: all
+        cidr_ip:
+          - "{{mgmt_a_cidr_block}}"
+          - "{{mgmt_c_cidr_block}}"
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip:
+          - "{{dmz_a_cidr_block}}"
+          - "{{dmz_c_cidr_block}}"
+ 
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: "0.0.0.0/0"
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: "0.0.0.0/0"
+      - proto: tcp
+        from_port: 7000
+        to_port: 9999
+        cidr_ip: "0.0.0.0/0"
+      - proto: icmp
+        from_port: 8
+        to_port: -1
+        cidr_ip: "0.0.0.0/0"
+
+
+  - name: "{{ aws_vpc_name }}-dev-db-sg"
+    vpc_id: "{{ aws_vpc_id }}"
+    region: "{{ aws_vpc_region }}"
+    rules:
+      - proto: all
+        group_name: "{{ aws_vpc_name }}-dev-db-sg"
+      - proto: all
+        cidr_ip:
+          - "{{ aws_external_ip1 }}"
+          - "{{ aws_external_ip2 }}"
+          - "{{aws_internal_ip1}}"
+          - "{{aws_internal_ip2}}"
+          - "{{aws_internal_ip3}}"
+          - "{{aws_internal_ip4}}"
+          - "{{aws_internal_ip5}}"
+          - "{{aws_internal_ip6}}"
+          - "{{aws_internal_ip7}}"
+          - "{{aws_internal_ip8}}"
+      - proto: all
+        cidr_ip:
+          - "{{mgmt_a_cidr_block}}"
+          - "{{mgmt_c_cidr_block}}"
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip:
+          - "{{dmz_a_cidr_block}}"
+          - "{{dmz_c_cidr_block}}"
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip:
+          - "{{dev_app_a_cidr_block}}"
+          - "{{dev_app_c_cidr_block}}"
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip:
+          - "{{dev_app_a_cidr_block}}"
+          - "{{dev_app_c_cidr_block}}"
+      - proto: tcp
+        from_port: 3306
+        to_port: 3306
+        cidr_ip:
+          - "{{dev_app_a_cidr_block}}"
+          - "{{dev_app_c_cidr_block}}"
+      - proto: tcp
+        from_port: 5432
+        to_port: 5432
+        cidr_ip:
+          - "{{dev_app_a_cidr_block}}"
+          - "{{dev_app_c_cidr_block}}"
+      - proto: tcp
+        from_port: 7000
+        to_port: 9999
+        cidr_ip:
+          - "{{dev_app_a_cidr_block}}"
+          - "{{dev_app_c_cidr_block}}"
+      - proto: icmp
+        from_port: 8
+        to_port: -1
+        cidr_ip: "0.0.0.0/0"
+
+
+  - name: "{{ aws_vpc_name }}-dev-app-sg"
+    vpc_id: "{{ aws_vpc_id }}"
+    region: "{{ aws_vpc_region }}"
+    rules:
+      - proto: all
+        group_name: "{{ aws_vpc_name }}-dev-app-sg"
+      - proto: all
+        cidr_ip:
+          - "{{ aws_external_ip1 }}"
+          - "{{ aws_external_ip2 }}"
+          - "{{aws_internal_ip1}}"
+          - "{{aws_internal_ip2}}"
+          - "{{aws_internal_ip3}}"
+          - "{{aws_internal_ip4}}"
+          - "{{aws_internal_ip5}}"
+          - "{{aws_internal_ip6}}"
+          - "{{aws_internal_ip7}}"
+          - "{{aws_internal_ip8}}"
+      - proto: all
+        cidr_ip:
+          - "{{mgmt_a_cidr_block}}"
+          - "{{mgmt_c_cidr_block}}"
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip:
+          - "{{dmz_a_cidr_block}}"
+          - "{{dmz_c_cidr_block}}"
+
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: "0.0.0.0/0"
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: "0.0.0.0/0"
+      - proto: tcp
+        from_port: 7000
+        to_port: 9999
+        cidr_ip: "0.0.0.0/0"
+      - proto: icmp
+        from_port: 8
+        to_port: -1
+        cidr_ip: "0.0.0.0/0"
+
+# VPC NAT instances
+#
+aws_vpc_nat_instances:
+  nat_a:
+    group: "{{ aws_vpc_name }}-nat-sg"
+    tags:
+      Name: "{{ aws_vpc_name }}-nat-a"
+    instance_type: "{{aws_nat_instance_type}}"
+    image_id: "{{aws_nat_ami_id}}"
+    key_name: "{{aws_key_name}}"
+    region: "{{ aws_vpc_region }}"
+    subnet: "{{ aws_vpc_name }}-dmz-a"
+
+  nat_c:
+    group: "{{ aws_vpc_name }}-nat-sg"
+    tags:
+      Name: "{{ aws_vpc_name }}-nat-c"
+    instance_type: "{{aws_nat_instance_type}}"
+    image_id: "{{aws_nat_ami_id}}"
+    key_name: "{{aws_key_name}}"
+    region: "{{ aws_vpc_region }}"
+    subnet: "{{ aws_vpc_name }}-dmz-c"
+
+aws_vpc_igw_route_tables:
+
+  - vpc_id: "{{ aws_vpc_id }}"
+    region: "{{ aws_vpc_region }}"
+    propagating_vgw_ids:  ["{{ aws_vpngateway_id }}"]
+    tags:
+      Name: "{{ aws_vpc_name }}-route-dmz"
+    subnets:
+      - "{{ aws_vpc_name }}-dmz-a" 
+      - "{{ aws_vpc_name }}-dmz-c"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ aws_gateway_id }}"
+      - dest: "{{ aws_vpngateway_cidr }}"
+        gateway_id: "{{ aws_vpngateway_id }}"
+
+aws_vpc_nat_route_tables:
+
+  - vpc_id: "{{ aws_vpc_id }}"
+    region: "{{ aws_vpc_region }}"
+    propagating_vgw_ids:  ["{{ aws_vpngateway_id }}"]
+    tags:
+      Name: "{{ aws_vpc_name }}-route-a"
+    subnets:
+      - "{{ aws_vpc_name }}-dev-app-a"
+      - "{{ aws_vpc_name }}-dev-db-a"
+      - "{{ aws_vpc_name }}-mgmt-a"
+      - "{{ aws_vpc_name }}-prod-app-a"
+      - "{{ aws_vpc_name }}-prod-db-a"
+
+    routes:
+      - dest: "{{ aws_vpngateway_cidr }}"
+        gateway_id: "{{ aws_vpngateway_id }}"
+        
+  - vpc_id: "{{ aws_vpc_id }}"
+    region: "{{ aws_vpc_region }}"
+    propagating_vgw_ids:  ["{{ aws_vpngateway_id }}"]
+    tags:
+      Name: "{{ aws_vpc_name }}-route-c"
+    subnets:
+      - "{{ aws_vpc_name }}-dev-app-c"
+      - "{{ aws_vpc_name }}-dev-db-c"
+      - "{{ aws_vpc_name }}-mgmt-c"
+      - "{{ aws_vpc_name }}-prod-app-c"
+      - "{{ aws_vpc_name }}-prod-db-c"
+
+    routes:
+      - dest: "{{ aws_vpngateway_cidr }}"
+        gateway_id: "{{ aws_vpngateway_id }}"

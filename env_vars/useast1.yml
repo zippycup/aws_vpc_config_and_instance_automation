@@ -1,0 +1,18 @@
+---
+aws_vpc_region: us-east-1
+aws_continent: us
+aws_vpc_name: useast1
+aws_subnet_region: east
+aws_vpc_cidr: 10.8
+aws_subnet_env: [ 'prod', 'dev' ]
+
+availability_zone_map:
+  0: a
+  1: c
+
+#edit me
+aws_vpc_domain: useast1.mydomain.net
+aws_key_name: myawskey
+aws_vpngateway_id: vgw-xxxxxx
+centos7_ami: ami-xxxxx
+aws_nat_ami_id: ami-xxxx

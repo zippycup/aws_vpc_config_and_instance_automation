@@ -1,0 +1,39 @@
+---
+
+- name: include_tasks vpc.yml
+  include_tasks: vpc.yml
+  tags: [vpc, create]
+
+- name: include_tasks dhcp.yml
+  include_tasks: dhcp.yml
+  tags: [vpc, dhcp]
+
+- name: include_tasks subnets.yml
+  include_tasks: subnets.yml
+  tags: [vpc, subnets]
+
+- name: include_tasks groups.yml
+  include_tasks: groups.yml
+  tags: [vpc, groups]
+  with_items: "{{ aws_ec2_groups }}"
+  loop_control:
+    loop_var: outer_item
+
+- name: include_tasks nat.yml
+  include_tasks: nat.yml
+  tags: [vpc, nat]
+  with_dict: "{{ aws_vpc_nat_instances }}"
+  loop_control:
+    loop_var: outer_item
+
+- name: include_tasks igw-route-tables.yml
+  include_tasks: igw-route-tables.yml
+  tags: [vpc,  igw-route-tables]
+
+- name: include_tasks nat-route-tables.yml
+  include_tasks: nat-route-tables.yml
+  tags: [vpc,  nat-route-tables]
+  with_items: "{{ aws_vpc_nat_route_tables }}"
+  loop_control:
+    loop_var: outer_nat_route
+

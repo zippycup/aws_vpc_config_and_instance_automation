@@ -1,0 +1,29 @@
+---
+
+- name: Debug AWS EC2 Groups variable
+  debug:
+    var: aws_ec2_groups
+  when: debug_play
+
+- name: Debug AWS EC2 Groups outer_item
+  debug:
+    var: outer_item
+  when: debug_play
+
+- name: Manage AWS EC2 security groups
+  ec2_group:
+    name: "{{ outer_item.name }}"
+    description: "{{ outer_item.name }}"
+    vpc_id: "{{ outer_item.vpc_id }}"
+    region: "{{ outer_item.region }}"
+    rules: "{{ outer_item.rules }}"
+  register: aws_sg
+
+- name: Tag the security group with a name
+  local_action:
+    module: ec2_tag
+    resource: "{{aws_sg.group_id}}"
+    region: "{{ outer_item.region }}"
+    state: present
+    tags:
+      Name: "{{ outer_item.name }}"

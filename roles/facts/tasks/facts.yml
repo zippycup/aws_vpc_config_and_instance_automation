@@ -1,0 +1,54 @@
+---
+
+- name: Gather VPC facts
+  ec2_vpc_net_facts:
+    region: "{{ aws_vpc_region }}"
+    filters:
+      "tag:Name": "{{ aws_vpc_name }}"
+  register: vpc_facts
+
+- name: Set VPC ID fact
+  set_fact:
+    aws_vpc_id: "{{ vpc_facts.vpcs[0].id }}"
+
+- name: Gather IGW facts
+  ec2_vpc_igw:
+    region: "{{ aws_vpc_region }}"
+    vpc_id: "{{ aws_vpc_id }}"
+  register: igw_facts
+
+- name: Gather VPC subnet facts
+  ec2_vpc_subnet_facts:
+    region: "{{ aws_vpc_region }}"
+    filters:
+      vpc-id: "{{ aws_vpc_id }}"
+  register: subnet_facts
+
+- name: set_fact aws_gateway_id
+  set_fact:
+    aws_gateway_id: "{{igw_facts.gateway_id}}"
+
+- name: Gather EC2 instance facts
+# ec2_instance_facts:
+  ec2_remote_facts:
+    region: "{{ aws_vpc_region }}"
+    filters:
+      vpc-id: "{{ aws_vpc_id }}"
+  register: vpc_instance_facts
+
+- name: Set EC2 instance facts
+  set_fact:
+    vpc_instances: "{{ vpc_instance_facts.instances | map(attribute='tags.Name') | list }}"
+
+- name: Debug VPC Instances variable
+  debug:
+    var: vpc_instances
+  when: debug_play
+
+- name: Set EC2 route_table_facts
+  ec2_vpc_route_table_facts:
+    region: "{{ aws_vpc_region }}"
+    filters:
+      vpc-id: "{{ aws_vpc_id }}"
+  register: route_table_facts
+

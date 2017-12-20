@@ -1,0 +1,38 @@
+
+subnet_tagname_list: []
+debug_play: False
+
+aws_vpc_dns_servers: AmazonProvidedDNS
+
+aws_external_ip1: xxx.xxx.xxx/32
+aws_external_ip1_desc: datacenter1 external
+
+aws_external_ip2: xxx.xxx.xxx/32
+aws_external_ip2_desc: datacenter2 external
+
+
+aws_internal_ip1: xxx.xxx.xxx/32
+aws_internal_ip1_desc: datacenter1 internal
+
+aws_internal_ip2: xxx.xxx.xxx/32
+aws_internal_ip2_desc: datacenter2 internal
+
+aws_internal_ip3: xxx.xxx.xxx/32
+aws_internal_ip3_desc: datacenter3 internal
+
+aws_internal_ip4: xxx.xxx.xxx/32
+aws_internal_ip4_desc: datacenter4 internal
+
+aws_internal_ip5: xxx.xxx.xxx/32
+aws_internal_ip5_desc: datacenter5 internal
+
+aws_internal_ip6: xxx.xxx.xxx/32
+aws_internal_ip6_desc: datacenter6 internal
+
+aws_internal_ip7: xxx.xxx.xxx/32
+aws_internal_ip7_desc: datacenter7 internal
+
+aws_internal_ip8: xxx.xxx.xxx/32
+aws_internal_ip8_desc: datacenter8 internal
+
+aws_vpngateway_cidr: 10.27.0.0/16

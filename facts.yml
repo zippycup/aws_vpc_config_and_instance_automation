@@ -1,0 +1,12 @@
+---
+
+- hosts: localhost
+  connection: local
+
+  vars_files:
+    - "./env_vars/{{ aws_environment }}.yml"
+    - "./env_vars/common.yml"
+
+  roles:
+    - facts
+

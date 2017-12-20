@@ -1,0 +1,10 @@
+---
+
+- name:  include_tasks facts.yml
+  include_tasks: facts.yml
+  tags: [facts]
+
+#- name: include_tasks conf.yml
+#  include_tasks: conf.yml
+#  tags: [facts, conf]
+

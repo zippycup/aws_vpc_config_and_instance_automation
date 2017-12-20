@@ -1,0 +1,17 @@
+# hosts: {{ aws_environment }}
+#
+{% for host in groups['all']|sort %}
+{% if 'ec2_vpc_id' in hostvars[host] %}
+{% if hostvars[host]['ec2_vpc_id'] == aws_vpc_id %}
+{% if 'ec2_tag_Name' in hostvars[host] %}
+'{{ hostvars[host]['ec2_tag_Name'] }}':
+{% for key in aws_facts_ec2_keys %}
+{% if key in hostvars[host] %}
+  {{ key }}: {{ hostvars[host][key] }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endif %}
+{% endif %}
+{% endfor %}

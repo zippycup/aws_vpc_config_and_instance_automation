@@ -1,0 +1,4 @@
+localhost ansible_python_interpreter=/opt/Anaconda2-4.3.1/envs/sysops/bin/python
+
+[aws]
+localhost
