@@ -1,0 +1,104 @@
+---
+
+# subnet can only be [ 'db', 'dmz' , 'app', 'mgmt' } for prod
+
+prod_instance_detail:
+
+  - name: app
+    instances: 0
+    subnet: app
+    instance_type: m4.large
+    ami_image: "{{centos7_ami}}"
+    userdata_template: default.j2
+    volumes:
+      - device_name: /dev/sda1
+        volume_type: gp2
+        volume_size: 40
+
+  - name: clouderamgr
+    instances: 0
+    subnet: app
+    instance_type: m4.large
+    ami_image: "{{centos7_ami}}"
+    userdata_template: default.j2
+    volumes:
+      - device_name: /dev/sda1
+        volume_type: gp2
+        volume_size: 100
+
+  - name: clouderagent
+    instances: 0
+    subnet: app
+    instance_type: m4.large
+    ami_image: "{{centos7_ami}}"
+    userdata_template: default.j2
+    volumes:
+      - device_name: /dev/sda1
+        volume_type: gp2
+        volume_size: 100
+
+  - name: clouderadbagent
+    instances: 0
+    subnet: app
+    instance_type: m4.xlarge
+    ami_image: "{{centos7_ami}}"
+    userdata_template: default.j2
+    volumes:
+      - device_name: /dev/sda1
+        volume_type: gp2
+        volume_size: 100
+
+  - name: hadoopnamenode
+    instances: 0
+    subnet: app
+    instance_type: m4.xlarge
+    ami_image: "{{centos7_ami}}"
+    userdata_template: default.j2
+    volumes:
+      - device_name: /dev/sda1
+        volume_type: gp2
+        volume_size: 100
+
+  - name: hadoopnresourcemgr
+    instances: 0
+    subnet: app
+    instance_type: m4.xlarge
+    ami_image: "{{centos7_ami}}"
+    userdata_template: default.j2
+    volumes:
+      - device_name: /dev/sda1
+        volume_type: gp2
+        volume_size: 100
+
+  - name: hadoopslave
+    instances: 0
+    subnet: app
+    instance_type: m4.large
+    ami_image: "{{centos7_ami}}"
+    userdata_template: default.j2
+    volumes:
+      - device_name: /dev/sda1
+        volume_type: gp2
+        volume_size: 100
+
+  - name: puppetserver
+    instances: 0
+    subnet: mgmt
+    instance_type: m4.large
+    ami_image: "{{centos7_ami}}"
+    userdata_template: default.j2
+    volumes:
+      - device_name: /dev/sda1
+        volume_type: gp2
+        volume_size: 100
+
+  - name: squidproxy
+    instances: 1
+    subnet: dmz
+    instance_type: t2.micro
+    ami_image: "{{centos7_ami}}"
+    userdata_template: default.j2
+    volumes:
+      - device_name: /dev/sda1
+        volume_type: gp2
+        volume_size: 30

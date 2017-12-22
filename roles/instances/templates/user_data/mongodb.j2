@@ -1,0 +1,6 @@
+# extra
+runcmd:
+  - echo "Enable Puppet"
+  - chkconfig puppet on
+mounts:
+ - [ /dev/mapper/mongodb/data, /var/lib/mongodb, "ext4", "noatime,nodev,nofail", "0", "0" ]

@@ -1,0 +1,43 @@
+{% set user_data_template =  [ '../templates/user_data/', outer_item.userdata_template ] | join('') %}
+{% set user_data = lookup('file', user_data_template) | indent(6,true) %}
+{% for number in range(outer_item.instances) %}
+{%   if number < 10 %}
+{%     set counter = ['0', number+1] | join('') %}
+{%   else %}
+{%     set counter = number+1 %}
+{%   endif %}
+{%   set availablity_zone =  availability_zone_map[number%2] %}
+- name: {{current_env}}-{{outer_item.name}}-{{counter}}
+  ec2:
+{%   if (outer_item.subnet == 'db' or outer_item.subnet == 'app') -%}
+{%     set subnet_tag =  [aws_vpc_name, "-", current_env, "-", outer_item.subnet, "-", availablity_zone] | join('') %}
+    group: {{ aws_vpc_name }}-{{current_env}}-{{ outer_item.subnet }}-sg
+{%   else -%}
+{%     set subnet_tag =  [aws_vpc_name, "-", outer_item.subnet, "-", availablity_zone] | join('') %}
+    group: {{ aws_vpc_name }}-{{ outer_item.subnet }}-sg
+{%   endif -%}
+{%   set subnet_record = subnet_facts.subnets | selectattr("tags.Name", "equalto", subnet_tag) | list | unique %}
+    image: {{ outer_item.ami_image }}
+    key_name: {{ aws_key_name }}
+    region: {{ aws_vpc_region }}
+    user_data: |
+      #cloud-config
+      hostname: {{current_env}}-{{outer_item.name}}-{{counter}}
+      fqdn: {{current_env}}-{{outer_item.name}}-{{counter}}.{{ aws_vpc_domain }}
+      manage_etc_hosts: true
+      package_update: true
+      disable_root: false
+      power_state:
+        mode: reboot
+        message: cloud-init complete
+        timeout: 15
+
+{{user_data}}
+    volumes: {{ outer_item.volumes | to_nice_json }}
+    vpc_subnet_id: {{subnet_record[0].id}}
+    instance_tags: { 'Name': {{current_env}}-{{outer_item.name}}-{{counter}} }
+    instance_type: {{ outer_item.instance_type }}
+    monitoring: yes
+    wait: yes
+  when: "'{{current_env}}-{{outer_item.name}}-{{counter}}' not in vpc_instances"
+{% endfor %}

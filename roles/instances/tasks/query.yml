@@ -1,0 +1,11 @@
+---
+
+- name: Debug 
+  debug:
+    msg: "{{outer_item}}"
+  when: debug_play
+
+- name: Create instance template
+  template:
+    src: ./roles/instances/templates/instances.j2
+    dest: ./roles/instances/build/{{aws_environment}}/{{current_env}}_{{outer_item.name}}.yml

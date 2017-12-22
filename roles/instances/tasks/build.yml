@@ -1,0 +1,10 @@
+---
+
+- name: Debug task build
+  debug:
+    msg: 'Task: build'
+
+- name: Builds from query template 
+  include_tasks: "{{item}}"
+  with_fileglob:
+    - ../build/{{aws_environment}}/*.yml

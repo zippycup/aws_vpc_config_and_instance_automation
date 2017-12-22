@@ -1,0 +1,41 @@
+---
+
+- name: Clean artifact path
+  file:
+    state: absent
+    path: "./roles/instances/build/{{aws_environment}}"
+  tags: [ 'query' ]
+
+- name: Clean artifact path
+  file:
+    state: directory
+    path: "./roles/instances/build/{{aws_environment}}"
+  tags: [ 'query' ]
+
+- name: set_fact current_env
+  set_fact:
+    current_env: dev
+  tags: [ 'query' ]
+
+- name: include query.yml
+  include_tasks: query.yml 
+  with_items: "{{ dev_instance_detail }}"
+  loop_control:
+    loop_var: outer_item
+  tags: [ 'query' ]
+
+- name: set_fact current_env
+  set_fact:
+    current_env: prod
+  tags: [ 'query' ]
+
+- name: include query.yml
+  include_tasks: query.yml
+  with_items: "{{ prod_instance_detail }}"
+  loop_control:
+    loop_var: outer_item
+  tags: [ 'query' ]
+
+- name: include build.yml
+  include_tasks: build.yml
+  tags: [ 'build' ] 
