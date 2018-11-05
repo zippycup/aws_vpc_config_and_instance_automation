@@ -3,6 +3,10 @@
 ## Objective
 Manage all aspect of AWS VPC ( virtual private cloud ) programatically via ansible
 
+## Warning
+- ONLY works for ansible 2.4, newer version the fail on ec2_vpc_route_table:
+  matching_count = len([1 for s in subnets_by_name if s.tags.get('Name') == name])\nAttributeError: 'dict' object has no attribute 'tags'
+
 ## Requirements
 - linux environment such as centOS
 - python 2.7 minimum
